@@ -60,6 +60,7 @@ services:
       restart: always
       volumes:
           - ./code/php5.6:/var/www/php56.docker.local/public
+          - ./code:/code
 #          - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
           - ./logs/php/fpm-php.www.log:/var/log/fpm-php56.www.log
 #      expose:
