@@ -97,10 +97,10 @@ services:
       - "TZ=Europe/Warsaw"
       # Only for first run to create database and users.
       # After that comment it out or remove, because ENV are shown in docker inspect command:
-      - MYSQL_ROOT_PASSWORD: some_new_password_for_db_root
-      - MYSQL_DATABASE: some_new_database_to_create
-      - MYSQL_USER: db_user_name_to_create
-      - MYSQL_PASSWORD: db_user_password_to_create
+      - "MYSQL_ROOT_PASSWORD: some_new_password_for_db_root"
+      - "MYSQL_DATABASE: some_new_database_to_create"
+      - "MYSQL_USER: db_user_name_to_create"
+      - "MYSQL_PASSWORD: db_user_password_to_create"
     volumes:
  #     - "/var/backup:/var/backup"
       - ./data/db:/var/lib/mysql
