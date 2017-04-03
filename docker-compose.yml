@@ -12,6 +12,8 @@ services:
           # https, but first you need to generate certs \
           # ie. http://stackoverflow.com/questions/10175812/how-to-create-a-self-signed-certificate-with-openssl
 #          - ./ssl:/etc/nginx/certs:ro
+          - ./code/php7:/var/www/php7.docker.local/public
+          - ./code/php5.6:/var/www/php56.docker.local/public
           - ./logs/nginx:/var/log/nginx
 #          - /var/www:/var/www
       hostname: nginx
@@ -21,7 +23,7 @@ services:
       links:
           - db
           - php7-fpm
-          - php5.6-fpm
+          - php56-fpm
           - nodejs
           - phpmyadmin
 #          - workspace
@@ -49,14 +51,14 @@ services:
           - db
           - memcached
 
-  php5.6-fpm:
+  php56-fpm:
       image: php:5.6-fpm
       # Optional: with integrated mysql extensions
 #      build:
 #          context: ./php5.6-fpm
       restart: always
       volumes:
-          - ./code/php-5.6:/var/www/php56.docker.local/public
+          - ./code/php5.6:/var/www/php56.docker.local/public
 #          - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
           - ./logs/php/fpm-php.www.log:/var/log/fpm-php56.www.log
 #      expose:
