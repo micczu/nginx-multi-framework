@@ -1,0 +1,166 @@
+version: "2"
+services:
+  nginx:
+      image: nginx:latest
+      restart: always
+      ports:
+          - "8080:80"
+      volumes:
+          - ./code:/code:ro
+#          - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+          - ./nginx/conf.d:/etc/nginx/conf.d:ro
+          # https, but first you need to generate certs \
+          # ie. http://stackoverflow.com/questions/10175812/how-to-create-a-self-signed-certificate-with-openssl
+#          - ./ssl:/etc/nginx/certs:ro
+          - ./logs/nginx:/var/log/nginx
+#          - /var/www:/var/www
+      hostname: nginx
+      domainname: local
+      environment:
+          - "TZ=Europe/Warsaw"
+      links:
+          - db
+          - php7-fpm
+          - php5.6-fpm
+          - nodejs
+          - phpmyadmin
+#          - workspace
+
+  php7-fpm:
+      image: php:7-fpm
+      # Optional: with integrated mysql extensions
+#      build:
+#          context: ./php7-fpm
+      restart: always
+      volumes:
+#          - /var/www:/var/www
+          - ./code/php7:/var/www
+#          - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+          - ./logs/php/fpm-php.www.log:/var/log/fpm-php7.www.log
+#      expose:
+#          - "9000"
+      environment:
+#          - "DB_HOST=db"
+#          - "DB_DATABASE=dbase"
+          - "TZ=Europe/Warsaw"
+      hostname: php7-fpm
+      domainname: local
+      links:
+          - db
+          - memcached
+
+  php5.6-fpm:
+      image: php:5.6-fpm
+      # Optional: with integrated mysql extensions
+#      build:
+#          context: ./php5.6-fpm
+      restart: always
+      volumes:
+          - ./code/php-5.6:/var/www
+#          - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+          - ./logs/php/fpm-php.www.log:/var/log/fpm-php5.6.www.log
+#      expose:
+#          - "9000"
+      environment:
+#          - "DB_HOST=db"
+#          - "DB_DATABASE=baza"
+          - "TZ=Europe/Warsaw"
+      hostname: php5.6-fpm
+      domainname: local
+      links:
+          - db
+          - memcached
+
+  nodejs:
+# usage: https://hub.docker.com/_/node/
+      image: node:latest
+      restart: always
+      volumes:
+#          - /var/www:/var/www
+          - ./code/nodejs:/code
+      environment:
+#          - "DB_HOST=db"
+#          - "DB_DATABASE=baza"
+          - "TZ=Europe/Warsaw"
+      hostname: nodejs
+      domainname: local
+      links:
+          - memcached
+          
+  db:
+    image: mariadb:10.1
+    restart: always
+    ports:
+      # DB accesible only on localhost and in Docker network; this allows connecting from localhost:
+      - "127.0.0.1:3306:3306"
+    environment:
+      - "TZ=Europe/Warsaw"
+      # Only for first run to create database and users.
+      # After that comment it out or remove, because ENV are shown in docker inspect command:
+      - MYSQL_ROOT_PASSWORD: some_new_password_for_db_root
+      - MYSQL_DATABASE: some_new_database_to_create
+      - MYSQL_USER: db_user_name_to_create
+      - MYSQL_PASSWORD: db_user_password_to_create
+    volumes:
+ #     - "/var/backup:/var/backup"
+      - ./data/db:/var/lib/mysql
+#      - ./logs/db:/var/log/
+    hostname: db
+    domainname: local
+
+  phpmyadmin:
+#   image: phpmyadmin/phpmyadmin:latest
+    build: ./phpmyadmin
+    restart: always
+   #container_name: phpmyadmin
+    links:
+      - db
+      - memcached
+#   ports:
+#     - 8181:80
+    volumes:
+      - /sessions
+      # Custom config if needed (ie. domainname, custom logs, https and simple auth)
+#      - ./phpmyadmin/pma.conf:/etc/nginx.conf:ro
+#      - ./phpmyadmin/pmapass:/etc/nginx/pmapass:ro
+      - ./phpmyadmin/tes.php:/www/tes.php:ro
+      # https, but first you need to generate certs:
+#      - ./ssl/pma:/etc/nginx/certs/:ro
+      - ./logs/pma:/var/log/nginx
+    environment:
+      - "TZ=Europe/Warsaw"
+    hostname: phpmyadmin
+    domainname: local
+
+  memcached:
+    image: memcached:latest
+    restart: always
+    environment:
+      - "TZ=Europe/Warsaw"
+    hostname: memcached
+    domainname: local
+  
+# Workspace container could be used to allow access for developers
+#  workspace:
+#    restart: always
+#    build: ./workspace
+#    environment:
+#        - TZ="Europe/Warsaw"
+##    extra_hosts:
+##    Some additional custom addressess in /etc/hosts
+##    (Docker automatically updates /etc/hosts files adding other services names)
+##        - "somehost:someIP"
+#    volumes:
+#        - "./home:/home"
+##        - "/var/www:/var/www"
+#        - "./code:/code"
+#    links:
+#        - db
+#    hostname: workspace
+#    domainname: local
+#    ports:
+#        # SSH accessible from outside on port 2270
+#        - "2270:22"
+##        - "8000:8000"
+#    tty: true
+
