@@ -6,3 +6,5 @@ Simple try of making docker-compose file to create nginx with different framewor
 - php7-fpm
 - php5.6-fpm
 - nodejs
+
+Workspace forked from https://github.com/laradock/workspace
