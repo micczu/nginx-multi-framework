@@ -3,20 +3,20 @@
 server {
 #	listen 80 default_server;
 	listen 80;
-	server_name pma.example.com;
-    error_log   /var/log/nginx/pma.example.com_error.log;
-    access_log  /var/log/nginx/pma.example.com_access.log;
+	server_name pma.docker.local;
+    error_log   /var/log/nginx/pma.docker.local_error.log;
+    access_log  /var/log/nginx/pma.docker.local_access.log;
 	return 301 https://$host$request_uri;
 }
 
 server {  
 #    listen       80;
     listen       443 ssl;  
-    server_name  pma.example.com;
+    server_name  pma.docker.local;
     ssl_certificate /etc/nginx/certs/pma/pma_server.crt;
     ssl_certificate_key /etc/nginx/certs/pma/pma_server.key;
-#    error_log   /var/log/nginx/pma.example.com_error.log;
-#    access_log  /var/log/nginx/pma.example.com_access.log;
+#    error_log   /var/log/nginx/pma.docker.local_error.log;
+#    access_log  /var/log/nginx/pma.docker.local_access.log;
 #    root   /var/www/tecmintlovesnginx.com/public_html;  
 #   index  index.html index.htm;
     proxy_ssl_session_reuse off;
