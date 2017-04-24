@@ -8,7 +8,7 @@ Simple try of making docker-compose file to create nginx with different framewor
 - nodejs
 
 # Usage:
-    git clone https://github.com/micczu/nginx-multi-framework
+    git clone https://github.com/micczu/nginx-multi-framework.git
     cd nginx-multi-framework
     docker-compose up -d
 
